@@ -4,6 +4,7 @@ import csv
 import time
 from email.mime.text import MIMEText
 from email.message import EmailMessage
+import sys
 
 SENDER_ACCOUNTS = [
     {
@@ -39,7 +40,17 @@ INTERVAL_SECONDS = 60
 def load_recipients(filename):
     """Reads recipient data (tin, full_name, email) from the CSV file."""
     recipients = []
+    
+    max_limit = 524288 
     try:
+        csv.field_size_limit(max_limit)
+    except OverflowError:
+        # Fallback for very high limits on 32-bit systems
+        csv.field_size_limit(sys.maxsize)
+    # --- END OF FIX ---
+    
+    try:
+        # ... (rest of the function)
         with open(filename, mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
